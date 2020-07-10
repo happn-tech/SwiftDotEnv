@@ -12,7 +12,7 @@ public struct DotEnv {
 	
 	/**
 	Load .env file and put all the variables into the environment. */
-	public static func loadDotEnvFile(path: String) {
+	public static func loadDotEnvFile(path: String = ".env") {
 		let path = path.starts(with: "/") ? path : getAbsolutePath(relativePath: "/\(path)")
 		
 		if let path = path, let contents = try? String(contentsOfFile: path, encoding: .utf8) {
@@ -51,18 +51,10 @@ public struct DotEnv {
 		return ProcessInfo.processInfo.environment
 	}
 	
-	public init(withFile path: String = ".env") {
-		loadDotEnvFile(path: path)
-	}
-	
-	public func loadDotEnvFile(path: String) {
-		Self.loadDotEnvFile(path: path)
-	}
-	
 	/**
 	Return the value for `name` in the environment, returning the default if not
 	present. */
-	public func get(_ name: String) -> String? {
+	public static func get(_ name: String) -> String? {
 		guard let value = getenv(name) else {
 			return nil
 		}
@@ -72,7 +64,7 @@ public struct DotEnv {
 	/**
 	Return the integer value for `name` in the environment, returning default if
 	not present. */
-	public func getAsInt(_ name: String) -> Int? {
+	public static func getAsInt(_ name: String) -> Int? {
 		guard let value = get(name) else {
 			return nil
 		}
@@ -85,7 +77,7 @@ public struct DotEnv {
 	
 	- Note: the value is lowercaed and must be "true", "yes" or "1" to be
 	considered true. */
-	public func getAsBool(_ name: String) -> Bool? {
+	public static func getAsBool(_ name: String) -> Bool? {
 		guard let value = get(name) else {
 			return nil
 		}
@@ -100,13 +92,8 @@ public struct DotEnv {
 	
 	/**
 	Array subscript access to environment variables as it's cleaner */
-	public subscript(key: String) -> String? {
+	public static subscript(key: String) -> String? {
 		return get(key)
-	}
-	
-	/** Convenience for `ProcessInfo.processInfo.environment` */
-	public var all: [String: String] {
-		return ProcessInfo.processInfo.environment
 	}
 	
 	/**
@@ -122,4 +109,8 @@ public struct DotEnv {
 			return nil
 		}
 	}
+	
+	private init() {
+	}
+	
 }

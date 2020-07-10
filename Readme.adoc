@@ -19,11 +19,13 @@ Install using https://swift.org/package-manager/[Swift Package Manager].
 ----
 import DotEnv
 
-let env = DotEnv(withFile: ".env")
+DotEnv.loadDotEnvFile()
+/* Or, optionally specifying the path:
+     DotEnv.loadDotEnvFile(path: ".env") */
 
-let host = env.get("DB_HOST") ?? "localhost"
-let port = env.getAsInt("DB_PORT") ?? 3306
-let isEnabled = env.getAsBool("IS_ENABLED") ?? true
+let host = DotEnv.get("DB_HOST") ?? "localhost"
+let port = DotEnv.getAsInt("DB_PORT") ?? 3306
+let isEnabled = DotEnv.getAsBool("IS_ENABLED") ?? true
 ----
 
 An example `.env` file would be:
@@ -44,12 +46,12 @@ You can also use subscript access to retrieve the string version:
 
 [code,swift]
 ----
-let host = env["DB_HOST"] ?? "localhost"
+let host = DotEnv["DB_HOST"] ?? "localhost"
 ----
 
-As a convenience, you can use `env.all()` to retrieve all environment variables.
+As a convenience, you can use `env.all` to retrieve all environment variables.
 
-Note that the `.env` file is referenced relative to the directory where the binary is executed from.
+Note the `.env` file is referenced relative to the directory where the binary is executed from.
 
 == Caveats
 Currently has a very naive parser of the `.env` file and so doesn`'t support multi-line values.

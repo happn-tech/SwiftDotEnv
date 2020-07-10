@@ -6,7 +6,6 @@ import XCTest
 
 class DotEnvTests: XCTestCase {
 	
-	static var env: DotEnv!
 	static let envURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("test.env")
 	
 	override class func setUp() {
@@ -18,7 +17,7 @@ class DotEnvTests: XCTestCase {
 			MOCK_BOOL=true
 			"""
 		FileManager.default.createFile(atPath: envURL.path, contents: Data(testEnv.utf8), attributes: nil)
-		env = DotEnv(withFile: "test.env")
+		DotEnv.loadDotEnvFile(path: "test.env")
 	}
 	
 	override class func tearDown() {
@@ -31,33 +30,38 @@ class DotEnvTests: XCTestCase {
 	}
 	
 	func test_get_returnsString() {
-		let actualResult = Self.env.get("MOCK_STRING")
+		let actualResult = DotEnv.get("MOCK_STRING")
+		XCTAssertEqual(actualResult, "helloMom")
+	}
+	
+	func test_getSubscript_returnsString() {
+		let actualResult = DotEnv["MOCK_STRING"]
 		XCTAssertEqual(actualResult, "helloMom")
 	}
 	
 	func test_getAsInt_returnsInt() {
-		let actualResult = Self.env.getAsInt("MOCK_INT")
+		let actualResult = DotEnv.getAsInt("MOCK_INT")
 		XCTAssertEqual(actualResult, 42)
 	}
 	
 	func test_getAsBool_returnsBool() {
-		let actualResult = Self.env.getAsBool("MOCK_BOOL")
+		let actualResult = DotEnv.getAsBool("MOCK_BOOL")
 		XCTAssertNotNil(actualResult)
 		XCTAssertTrue(actualResult!)
 	}
 	
 	func test_comments_AreStripped() {
-		let actualResult = Self.env.get("# example comment")
+		let actualResult = DotEnv.get("# example comment")
 		XCTAssertNil(actualResult)
 	}
 	
 	func test_emptyLines_AreStripped() {
-		let actualResult = Self.env.get("\r\n")
+		let actualResult = DotEnv.get("\r\n")
 		XCTAssertNil(actualResult)
 	}
 	
 	func test_all_containsTestEnv() {
-		let actual = Self.env.all()
+		let actual = DotEnv.all
 		
 		XCTAssertTrue(actual.contains(where: { (key, _) -> Bool in
 			return key == "MOCK_STRING"
