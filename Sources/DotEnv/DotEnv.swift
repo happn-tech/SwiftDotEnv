@@ -46,6 +46,11 @@ public struct DotEnv {
 		}
 	}
 	
+	/** Convenience for `ProcessInfo.processInfo.environment` */
+	public static var all: [String: String] {
+		return ProcessInfo.processInfo.environment
+	}
+	
 	public init(withFile path: String = ".env") {
 		loadDotEnvFile(path: path)
 	}
@@ -99,9 +104,8 @@ public struct DotEnv {
 		return get(key)
 	}
 	
-	
-	/* Open */
-	public func all() -> [String: String] {
+	/** Convenience for `ProcessInfo.processInfo.environment` */
+	public var all: [String: String] {
 		return ProcessInfo.processInfo.environment
 	}
 	
