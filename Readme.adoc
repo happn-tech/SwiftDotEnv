@@ -1,0 +1,62 @@
+= SwiftDotEnv
+François Lamboley <francois.lamboley@happn.fr>
+
+:ruby_dotenv: https://github.com/bkeepers/dotenv
+:php_dotenv: https://github.com/vlucas/phpdotenv
+
+Swift library that loads environment variables from `.env` into the environment inspired by the {ruby_dotenv}[Ruby dotenv] and {php_dotenv}[PHP dotenv] projects.
+
+== Why?
+Storing https://12factor.net/config[configuration in the environment] is one of the tenets of a https://12factor.net[twelve-factor app]. Anything that is likely to change between deployment environments–such as resource handles for databases or credentials for external services–should be extracted from the code into environment variables.
+
+But it is not always practical to set environment variables on development machines or continuous integration servers where multiple projects are run. SwiftDotEnv loads variables from a `.env` file into `ENV` when the environment is bootstrapped.
+
+== Installation
+Install using https://swift.org/package-manager/[Swift Package Manager].
+
+== Usage
+[code,swift]
+----
+import DotEnv
+
+let env = DotEnv(withFile: ".env")
+
+let host = env.get("DB_HOST") ?? "localhost"
+let port = env.getAsInt("DB_PORT") ?? 3306
+let isEnabled = env.getAsBool("IS_ENABLED") ?? true
+----
+
+An example `.env` file would be:
+
+----
+DB_HOST=test.com
+DB_PORT=1234
+IS_ENABLED=0
+----
+
+There are three getter methods: 
+
+* `get()` returns a `String?`
+* `getAsInt()` returns an `Int?`
+* `getAsBool()` returns a `Bool?` where case-insensitive `"true"`, `"yes"` and `"1"` evaluate to `true`
+
+You can also use subscript access to retrieve the string version:
+
+[code,swift]
+----
+let host = env["DB_HOST"] ?? "localhost"
+----
+
+As a convenience, you can use `env.all()` to retrieve all environment variables.
+
+Note that the `.env` file is referenced relative to the directory where the binary is executed from.
+
+== Caveats
+Currently has a very naive parser of the `.env` file and so doesn`'t support multi-line values.
+
+== Contribute
+Contributions welcome! Please put your changes in a separate branch from master and raise a PR.
+
+== Credits
+This project is a fork of https://github.com/SwiftOnTheServer/SwiftDotEnv which has been discontinued. +
+We`'ll do our best to keep it updated when need be!
