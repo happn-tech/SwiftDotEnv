@@ -10,36 +10,32 @@ import Darwin
 
 public struct DotEnv {
 	
-	public init(withFile path: String = ".env") {
-		loadDotEnvFile(path: path)
-	}
-	
 	/**
 	Load .env file and put all the variables into the environment. */
-	public func loadDotEnvFile(path: String) {
+	public static func loadDotEnvFile(path: String) {
 		let path = path.starts(with: "/") ? path : getAbsolutePath(relativePath: "/\(path)")
-		if let path = path, let contents = try? NSString(contentsOfFile: path, encoding: String.Encoding.utf8.rawValue) {
-			
-			let lines = String(describing: contents).split { $0 == "\n" || $0 == "\r\n" }.map(String.init)
+		
+		if let path = path, let contents = try? String(contentsOfFile: path, encoding: .utf8) {
+			let lines = contents.split{ $0 == "\n" || $0 == "\r\n" }.map(String.init)
 			for line in lines {
 				/* ignore comments */
-				if line[line.startIndex] == "#" {
+				guard line[line.startIndex] != "#" else {
 					continue
 				}
 				
 				/* ignore lines that appear empty */
-				if line.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines).isEmpty {
+				guard !line.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
 					continue
 				}
 				
 				/* extract key and value which are separated by an equals sign */
 				let parts = line.split(separator: "=", maxSplits: 1).map(String.init)
 				
-				let key = parts[0].trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
-				var value = parts[1].trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
+				let key = parts[0].trimmingCharacters(in: .whitespacesAndNewlines)
+				var value = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
 				
 				/* remove surrounding quotes from value & convert remove escape
-				 * character before any embedded quotes */
+				* character before any embedded quotes */
 				if value[value.startIndex] == "\"" && value[value.index(before: value.endIndex)] == "\"" {
 					value.remove(at: value.startIndex)
 					value.remove(at: value.index(before: value.endIndex))
@@ -48,6 +44,14 @@ public struct DotEnv {
 				setenv(key, value, 1)
 			}
 		}
+	}
+	
+	public init(withFile path: String = ".env") {
+		loadDotEnvFile(path: path)
+	}
+	
+	public func loadDotEnvFile(path: String) {
+		Self.loadDotEnvFile(path: path)
 	}
 	
 	/**
@@ -81,8 +85,8 @@ public struct DotEnv {
 			return nil
 		}
 		
-		// is it "true"?
-		if ["true", "yes", "1"].contains(value.lowercased()) {
+		/* Is it "true"? */
+		if Set(arrayLiteral: "true", "yes", "1").contains(value.lowercased()) {
 			return true
 		}
 		
@@ -92,9 +96,7 @@ public struct DotEnv {
 	/**
 	Array subscript access to environment variables as it's cleaner */
 	public subscript(key: String) -> String? {
-		get {
-			return get(key)
-		}
+		return get(key)
 	}
 	
 	
@@ -106,7 +108,7 @@ public struct DotEnv {
 	/**
 	Determine absolute path of the given argument relative to the current
 	directory */
-	private func getAbsolutePath(relativePath: String) -> String? {
+	private static func getAbsolutePath(relativePath: String) -> String? {
 		let fileManager = FileManager.default
 		let currentPath = fileManager.currentDirectoryPath
 		let filePath = currentPath + relativePath

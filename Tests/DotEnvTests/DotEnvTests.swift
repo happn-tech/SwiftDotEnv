@@ -25,36 +25,34 @@ class DotEnvTests: XCTestCase {
 		_ = try? FileManager.default.removeItem(at: envURL)
 	}
 	
+	func test_getFromEnv() {
+		let actualResult = ProcessInfo.processInfo.environment["MOCK_STRING"]
+		XCTAssertEqual(actualResult!, "helloMom")
+	}
+	
 	func test_get_returnsString() {
 		let actualResult = Self.env.get("MOCK_STRING")
-		
-		XCTAssertNotNil(actualResult)
-		XCTAssertEqual(actualResult!, "helloMom")
+		XCTAssertEqual(actualResult, "helloMom")
 	}
 	
 	func test_getAsInt_returnsInt() {
 		let actualResult = Self.env.getAsInt("MOCK_INT")
-		
-		XCTAssertNotNil(actualResult)
-		XCTAssertEqual(actualResult!, 42)
+		XCTAssertEqual(actualResult, 42)
 	}
 	
 	func test_getAsBool_returnsBool() {
 		let actualResult = Self.env.getAsBool("MOCK_BOOL")
-		
 		XCTAssertNotNil(actualResult)
 		XCTAssertTrue(actualResult!)
 	}
 	
 	func test_comments_AreStripped() {
 		let actualResult = Self.env.get("# example comment")
-		
 		XCTAssertNil(actualResult)
 	}
 	
 	func test_emptyLines_AreStripped() {
 		let actualResult = Self.env.get("\r\n")
-		
 		XCTAssertNil(actualResult)
 	}
 	
