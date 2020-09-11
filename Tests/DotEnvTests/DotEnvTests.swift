@@ -13,6 +13,7 @@ class DotEnvTests: XCTestCase {
 			# example comment
 
 			MOCK_STRING=helloMom
+			MOCK_STRING_EMPTY=
 			MOCK_INT=42
 			MOCK_BOOL=true
 			"""
@@ -37,6 +38,16 @@ class DotEnvTests: XCTestCase {
 	func test_getSubscript_returnsString() {
 		let actualResult = DotEnv["MOCK_STRING"]
 		XCTAssertEqual(actualResult, "helloMom")
+	}
+
+	func test_get_returnsEmptyString() {
+		let actualResult = DotEnv.get("MOCK_STRING_EMPTY")
+		XCTAssertEqual(actualResult, "")
+	}
+
+	func test_getSubscript_returnsEmptyString() {
+		let actualResult = DotEnv["MOCK_STRING_EMPTY"]
+		XCTAssertEqual(actualResult, "")
 	}
 	
 	func test_getAsInt_returnsInt() {

@@ -31,7 +31,16 @@ public struct DotEnv {
 				/* extract key and value which are separated by an equals sign */
 				let parts = line.split(separator: "=", maxSplits: 1).map(String.init)
 				
+				guard !parts.isEmpty else {
+					continue
+				}
+				
 				let key = parts[0].trimmingCharacters(in: .whitespacesAndNewlines)
+				if parts.count == 1 {
+					/* empty value */
+					setenv(key, "", 1)
+					continue
+				}
 				var value = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
 				
 				/* remove surrounding quotes from value & convert remove escape
